@@ -1,0 +1,9 @@
+{
+	"name": "AzureDE1",
+	"location": "eastus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "529b94b0-1ea5-4062-9997-b76047075e59",
+		"tenantId": "66718319-6943-4061-a07a-bf1ece49b023"
+	}
+}
