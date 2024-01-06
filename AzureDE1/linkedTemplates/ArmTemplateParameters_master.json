@@ -15,7 +15,7 @@
 			"value": "https://de1azureadls554.dfs.core.windows.net/"
 		},
 		"HttpServer1_properties_typeProperties_url": {
-			"value": "https://ecdc.blob.core.windows.net"
+			"value": "@{linkedService().SourceBaseUrl}"
 		},
 		"trigger1_properties_typeProperties_scope": {
 			"value": "/subscriptions/07a5a79b-f8b9-4d9a-9e4c-03013170a1ff/resourceGroups/AzureDE1/providers/Microsoft.Storage/storageAccounts/de1storage554"
