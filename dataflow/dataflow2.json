@@ -17,6 +17,13 @@
 						"type": "DatasetReference"
 					},
 					"name": "source2"
+				},
+				{
+					"dataset": {
+						"referenceName": "DelimitedText2",
+						"type": "DatasetReference"
+					},
+					"name": "source3"
 				}
 			],
 			"sinks": [],
@@ -29,6 +36,15 @@
 				},
 				{
 					"name": "select2"
+				},
+				{
+					"name": "split1"
+				},
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "aggregate1"
 				}
 			],
 			"scriptLines": [
@@ -45,15 +61,32 @@
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> source1",
 				"source(output(",
-				"          Country as string,",
-				"          Response_measure as string,",
-				"          change as string,",
-				"          date_start as date,",
-				"          date_end as date",
+				"          country as string,",
+				"          country_code_2_digit as string,",
+				"          country_code_3_digit as string,",
+				"          continent as string,",
+				"          population as string",
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> source2",
+				"source(output(",
+				"          date_key as string,",
+				"          date as string,",
+				"          year as string,",
+				"          month as string,",
+				"          day as string,",
+				"          day_name as string,",
+				"          day_of_year as string,",
+				"          week_of_month as string,",
+				"          week_of_year as string,",
+				"          month_name as string,",
+				"          year_month as string,",
+				"          year_week as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> source3",
 				"source1 select(mapColumn(",
 				"          country,",
 				"          indicator,",
@@ -64,7 +97,7 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select1",
-				"select1, source2 lookup(select1@country == source2@Country,",
+				"select1, source2 lookup(select1@country == source2@country,",
 				"     multiple: false,",
 				"     pickup: 'any',",
 				"     broadcast: 'auto')~> lookup1",
@@ -75,14 +108,18 @@
 				"          reported_year_week,",
 				"          value,",
 				"          source,",
-				"          Country = source2@Country,",
-				"          Response_measure,",
-				"          change,",
-				"          date_start,",
-				"          date_end",
+				"          country_code_2_digit,",
+				"          country_code_3_digit,",
+				"          population",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> select2"
+				"     skipDuplicateMapOutputs: true) ~> select2",
+				"select2 split(indicator=='Weekly new hospital submission per 100k' || indicator=='Weekly new ICU admissions per 100k',",
+				"     disjoint: false) ~> split1@(weekly, daily)",
+				"source3 derive(year_week = year +'-W'+lpad(week_of_year, 2, '0')) ~> derivedColumn1",
+				"derivedColumn1 aggregate(groupBy(year_week),",
+				"     week_start_date = min(date),",
+				"          week_end_date = max(date)) ~> aggregate1"
 			]
 		}
 	}
