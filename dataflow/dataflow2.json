@@ -1,0 +1,89 @@
+{
+	"name": "dataflow2",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "HospitalAdmission_dl",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				},
+				{
+					"dataset": {
+						"referenceName": "CountryDF2",
+						"type": "DatasetReference"
+					},
+					"name": "source2"
+				}
+			],
+			"sinks": [],
+			"transformations": [
+				{
+					"name": "select1"
+				},
+				{
+					"name": "lookup1"
+				},
+				{
+					"name": "select2"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          country as string,",
+				"          indicator as string,",
+				"          date as date,",
+				"          year_week as string,",
+				"          value as double,",
+				"          source as string,",
+				"          url as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> source1",
+				"source(output(",
+				"          Country as string,",
+				"          Response_measure as string,",
+				"          change as string,",
+				"          date_start as date,",
+				"          date_end as date",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> source2",
+				"source1 select(mapColumn(",
+				"          country,",
+				"          indicator,",
+				"          reported_date = date,",
+				"          reported_year_week = year_week,",
+				"          value,",
+				"          source",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1, source2 lookup(select1@country == source2@Country,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     broadcast: 'auto')~> lookup1",
+				"lookup1 select(mapColumn(",
+				"          country = select1@country,",
+				"          indicator,",
+				"          reported_date,",
+				"          reported_year_week,",
+				"          value,",
+				"          source,",
+				"          Country = source2@Country,",
+				"          Response_measure,",
+				"          change,",
+				"          date_start,",
+				"          date_end",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select2"
+			]
+		}
+	}
+}
