@@ -51,6 +51,9 @@
 				},
 				{
 					"name": "pivot1"
+				},
+				{
+					"name": "pivot2"
 				}
 			],
 			"scriptLines": [
@@ -140,7 +143,16 @@
 				"     pivotBy(indicator),",
 				"     count = sum(value),",
 				"     columnNaming: '$V-$N',",
-				"     lateral: true) ~> pivot1"
+				"     lateral: true) ~> pivot1",
+				"split1@daily pivot(groupBy(country,",
+				"          source,",
+				"          country_code_2_digit,",
+				"          country_code_3_digit,",
+				"          reported_year_week,",
+				"          population),",
+				"     pivotBy(indicator),",
+				"     columnNaming: '$N$V',",
+				"     lateral: true) ~> pivot2"
 			]
 		}
 	}
