@@ -29,7 +29,7 @@
 					},
 					"sink": {
 						"type": "AzureSqlSink",
-						"preCopyScript": "TRUNCATE TABLE covid_reporting.cases_and_deaths",
+						"preCopyScript": "TRUNCATE TABLE covid_reporting.hospital_admissions_daily",
 						"writeBehavior": "insert",
 						"sqlWriterUseTableLock": false,
 						"disableMetricsCollection": false
@@ -46,7 +46,7 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "cases_death_sink_dl_df",
+						"referenceName": "ds_processed_hospital_admission_daily",
 						"type": "DatasetReference"
 					}
 				],
