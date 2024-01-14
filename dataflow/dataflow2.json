@@ -29,7 +29,7 @@
 			"sinks": [
 				{
 					"dataset": {
-						"referenceName": "ds_processed_hospital_admission_daily",
+						"referenceName": "ds_processed_hospital_admissions_weekly",
 						"type": "DatasetReference"
 					},
 					"name": "sink1"
@@ -215,7 +215,7 @@
 				"     skipDuplicateMapOutputs: true) ~> select4",
 				"select3 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     partitionFileNames:['Hospital-admission_daily.csv'],",
+				"     partitionFileNames:['Hospital-admission_weekly.csv'],",
 				"     umask: 0022,",
 				"     preCommands: [],",
 				"     postCommands: [],",
@@ -225,7 +225,7 @@
 				"     partitionBy('hash', 1)) ~> sink1",
 				"select4 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     partitionFileNames:['Hospital-admission_weekly.csv'],",
+				"     partitionFileNames:['Hospital-admission_daily.csv'],",
 				"     umask: 0022,",
 				"     preCommands: [],",
 				"     postCommands: [],",
