@@ -707,12 +707,14 @@
 						"     skipDuplicateMapOutputs: true) ~> select2",
 						"select2 sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
+						"     partitionFileNames:['cases.csv'],",
 						"     truncate: true,",
 						"     umask: 0022,",
 						"     preCommands: [],",
 						"     postCommands: [],",
 						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> sink1"
+						"     skipDuplicateMapOutputs: true,",
+						"     partitionBy('hash', 1)) ~> sink1"
 					]
 				}
 			},
@@ -751,7 +753,7 @@
 					"sinks": [
 						{
 							"dataset": {
-								"referenceName": "ds_processed_hospital_admission_daily",
+								"referenceName": "ds_processed_hospital_admissions_weekly",
 								"type": "DatasetReference"
 							},
 							"name": "sink1"
@@ -937,7 +939,7 @@
 						"     skipDuplicateMapOutputs: true) ~> select4",
 						"select3 sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
-						"     partitionFileNames:['Hospital-admission_daily.csv'],",
+						"     partitionFileNames:['Hospital-admission_weekly.csv'],",
 						"     umask: 0022,",
 						"     preCommands: [],",
 						"     postCommands: [],",
@@ -947,7 +949,7 @@
 						"     partitionBy('hash', 1)) ~> sink1",
 						"select4 sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
-						"     partitionFileNames:['Hospital-admission_weekly.csv'],",
+						"     partitionFileNames:['Hospital-admission_daily.csv'],",
 						"     umask: 0022,",
 						"     preCommands: [],",
 						"     postCommands: [],",
@@ -997,6 +999,37 @@
 							},
 							"traceLevel": "Fine"
 						}
+					},
+					{
+						"name": "Data flow2",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "dataflow1",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"CasesAndDeathSource": {},
+									"CountrySource": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
 					}
 				],
 				"policy": {
@@ -1005,7 +1038,8 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/dataflow2')]"
+				"[concat(variables('factoryId'), '/dataflows/dataflow2')]",
+				"[concat(variables('factoryId'), '/dataflows/dataflow1')]"
 			]
 		},
 		{
