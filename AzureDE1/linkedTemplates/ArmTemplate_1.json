@@ -477,7 +477,7 @@
 							},
 							"sink": {
 								"type": "AzureSqlSink",
-								"preCopyScript": "TRUNCATE TABLE covid_reporting.cases_and_deaths",
+								"preCopyScript": "TRUNCATE TABLE covid_reporting.hospital_admissions_daily",
 								"writeBehavior": "insert",
 								"sqlWriterUseTableLock": false,
 								"disableMetricsCollection": false
@@ -494,7 +494,7 @@
 						},
 						"inputs": [
 							{
-								"referenceName": "cases_death_sink_dl_df",
+								"referenceName": "ds_processed_hospital_admission_daily",
 								"type": "DatasetReference",
 								"parameters": {}
 							}
@@ -751,7 +751,7 @@
 					"sinks": [
 						{
 							"dataset": {
-								"referenceName": "ds_processed_hospital_admissions_weekly",
+								"referenceName": "ds_processed_hospital_admission_daily",
 								"type": "DatasetReference"
 							},
 							"name": "sink1"
@@ -937,18 +937,23 @@
 						"     skipDuplicateMapOutputs: true) ~> select4",
 						"select3 sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
+						"     partitionFileNames:['Hospital-admission_daily.csv'],",
 						"     umask: 0022,",
 						"     preCommands: [],",
 						"     postCommands: [],",
 						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> sink1",
+						"     skipDuplicateMapOutputs: true,",
+						"     saveOrder: 1,",
+						"     partitionBy('hash', 1)) ~> sink1",
 						"select4 sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
+						"     partitionFileNames:['Hospital-admission_weekly.csv'],",
 						"     umask: 0022,",
 						"     preCommands: [],",
 						"     postCommands: [],",
 						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> sink2"
+						"     skipDuplicateMapOutputs: true,",
+						"     partitionBy('hash', 1)) ~> sink2"
 					]
 				}
 			},
@@ -974,13 +979,15 @@
 						"userProperties": [],
 						"typeProperties": {
 							"dataflow": {
-								"referenceName": "dataflow1",
+								"referenceName": "dataflow2",
 								"type": "DataFlowReference",
 								"parameters": {},
 								"datasetParameters": {
-									"CasesAndDeathSource": {},
-									"CountrySource": {},
-									"sink1": {}
+									"source1": {},
+									"source2": {},
+									"source3": {},
+									"sink1": {},
+									"sink2": {}
 								}
 							},
 							"staging": {},
@@ -998,7 +1005,7 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/dataflow1')]"
+				"[concat(variables('factoryId'), '/dataflows/dataflow2')]"
 			]
 		},
 		{
