@@ -43,6 +43,10 @@
 				"name": "source",
 				"type": "varchar"
 			}
-		]
+		],
+		"typeProperties": {
+			"schema": "covid_reporting",
+			"table": "cases_and_deaths"
+		}
 	}
 }
